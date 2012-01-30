@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     
     'broweb',
+    'south',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
