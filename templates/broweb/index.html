@@ -1,0 +1,126 @@
+<html>
+<head>
+	<title>Bros and Books</title>
+	<link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css">
+	<style>
+	#content {
+		margin-top:25px;
+	}
+	#account {
+		position:absolute;
+		right:10px;
+		top:10px;
+	}
+	input.vote {
+		width:auto;height:auto;
+	}
+	</style>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+	<script type="text/javascript">
+	function alertMessage(data) {
+		$("#alert-message-tpl").tmpl(data).appendTo('#message-container')
+	}
+	$(function() {
+		$('form.upvote,form.downvote').submit(function(e) {
+			var $form = $(this);
+			e.preventDefault()
+			$.post($form.attr('action'),$form.serialize())
+				.success(function(data,status) {
+					window.location.reload()
+				})
+				.error(function(data) {
+					data = JSON.parse(data.responseText)
+					data['tag'] = 'warning'
+					alertMessage(data)
+				})
+			
+		})
+		$('a.close').on('click',function() {
+			$(this).closest('.alert-message').remove()
+		})
+	})
+	</script>
+	<script id="alert-message-tpl" type="text/template">
+		<div class="alert-message ${ tag }">
+			<a class="close" href="#">×</a>
+			<p>${ message }</p>
+		</div>
+	</script>
+
+
+</head>
+<body>
+
+	
+	<div id="account">
+		{% if request.user.is_authenticated %}
+			<a class="btn secondary" href="{% url logout %}">Logout</a>
+		{% else %}
+			<form action="{% url login %}" method="post">{% csrf_token %}
+				<input type="text" name="username" value="Username">
+				<input type="password" name="password" value="Password">
+				<input class="btn primary" type="submit" value="Login/Create">
+			</form>
+		{% endif %}
+	</div>
+	
+	<div id="content" class="container">
+		
+		<div id="message-container">
+			{% if messages %}
+				{% for message in messages %}
+				<div class="alert-message {% if message.tags %}{{ message.tags }}{% endif %}">
+					<a class="close" href="#">×</a>
+					<p>{{ message }}</p>
+				</div>
+				{% endfor %}
+			{% endif %}
+		</div>
+		
+		
+		<div id="current">
+			<h1>Bros and Books</h1>
+			<table>
+			{% for book in current_books %}
+				<tr>
+						<td>{{book.name}}</td><td>{{book.author}}</td><td>Days left {{book.current_reading.time_left.days}}</td>
+				</tr>
+			{% empty %}
+				<p>Not currently reading anything!</p>
+			{% endfor %}
+			</table>
+		</div>
+		
+		<div id="proposed">
+			<h2>Proposed</h2>
+			<table>
+			{% for book in proposed %}
+				<tr class="book">
+						<td>{{book.name}}</td>
+						<td>{{book.author}}</td>
+						<td>
+							<form class="upvote" action="{% url upvote book.id %}" method="post">
+								{% csrf_token %}
+								<input class="vote" type="image" src="/static/images/thumbsup.png" />
+							</form>
+						</td>
+						<td>
+							<form class="downvote" action="{% url downvote book.id %}" method="post">
+								{% csrf_token %}
+								<input class="vote"  type="image" src="/static/images/thumbsdown.png" />
+							</form>
+						</td>
+						<td>{{book.sum_votes}} (From {{book.count_votes}} votes.)</td>
+				</tr>
+			{% empty %}
+				<tr>
+						<td>Sorry. No proposed books.</td><td></td><td></td><td></td><td></td>
+				</tr>
+			{% endfor %}
+			</table>
+		</div>
+		
+	</div>
+</body>
+</html>
