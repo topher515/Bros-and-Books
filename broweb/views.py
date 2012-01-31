@@ -45,10 +45,11 @@ def ok_to_vote(request,book_id):
     if not request.session.get('votes'):
         request.session['votes'] = {}
     voted = request.session['votes'].get(int(book_id))
-    if voted and datetime.datetime.now() <= voted + datetime.timedelta(hours=1):
+    if voted is not None and datetime.datetime.now() <= voted + datetime.timedelta(hours=1):
         return False
     else:
         request.session['votes'][int(book_id)] = datetime.datetime.now()
+        request.session.modified = True
         return True
 
 def downvote(request,book_id):
