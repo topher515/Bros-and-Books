@@ -97,7 +97,7 @@
 			{% for book in current_books %}
 				<div class="current-book alert-message block-message info">
 					<p>You're currently supposed to be reading {% if book.links.all.0 %}<a href="{{ book.links.all.0 }}">"{{book.name}}"</a>{% else %}"{{book.name}}"{% endif %} by {{book.author}}. You've got {{book.current_reading.time_left.days}} days left.<p>
-					<img class="book" src="{{book.img.url}}" />
+					{% if book.img %}<img class="book" src="{{book.img.url}}" />{% endif %}
 				</div>
 			{% empty %}
 				<p>Not currently reading anything!</p>
