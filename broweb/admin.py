@@ -6,12 +6,15 @@ class LinkInline(admin.TabularInline):
 
 class VoteInline(admin.TabularInline):
     model = models.Vote
+    
+class ReadingInline(admin.TabularInline):
+    model = models.Reading
 
 class BookAdmin(admin.ModelAdmin):
     inlines = [
         LinkInline,
         VoteInline,
+        ReadingInline,
     ]
 
 admin.site.register(models.Book, BookAdmin)
-admin.site.register(models.Reading)

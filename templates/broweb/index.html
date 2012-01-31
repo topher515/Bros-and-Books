@@ -111,7 +111,7 @@
 			{% for book in proposed %}
 				<tr class="book">
 						<td>{{book.name}}</td>
-						<td><img class="book" src="{{book.img.url}}" /></td>
+						<td>{% if book.img %}<img class="book" src="{{book.img.url}}" />{% endif %}</td>
 						<td>{{book.author}}</td>
 						<td>
 							<form class="upvote" action="{% url upvote book.id %}" method="post">
