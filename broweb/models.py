@@ -2,9 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Book(models.Model):
+    def get_upload_to(self,filename):
+        return 'books/images/%s/%s' % (self.id,filename)
+        
     author = models.CharField(max_length=256)
     name = models.CharField(max_length=256)
-    pages = models.CharField(max_length=256)
+    pages = models.IntegerField()
+    img = models.ImageField(upload_to=get_upload_to, null=True, blank=True)
     mode = models.CharField(max_length=16,
         choices=(
             ('reading','Reading'),('read','Read'),('reject','Rejected'),('upcoming','Upcoming'),('proposed','Proposed'),
@@ -27,6 +31,9 @@ class Reading(models.Model):
     book = models.ForeignKey(Book, related_name='readings')
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    
+    def __str__(self):
+        return ('Reading %s from %s until %s' % (self.book,self.start_date,self.end_date))
     
     def time_left(self):
         return (self.end_date - self.start_date)

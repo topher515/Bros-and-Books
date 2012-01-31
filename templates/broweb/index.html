@@ -6,6 +6,17 @@
 	#content {
 		margin-top:25px;
 	}
+	.current-book {
+		height:75px;
+		position:relative;
+	}
+	img.book {
+		max-height:75px;
+		max-width:75px;
+		position:absolute;
+		right:15px;
+		top:15px;
+	}
 	#account {
 		position:absolute;
 		right:10px;
@@ -81,11 +92,13 @@
 		
 		<div id="current">
 			<h1>Bros and Books</h1>
+
 			<table>
 			{% for book in current_books %}
-				<tr>
-						<td>{{book.name}}</td><td>{{book.author}}</td><td>Days left {{book.current_reading.time_left.days}}</td>
-				</tr>
+				<div class="current-book alert-message block-message info">
+					<p>You're currently supposed to be reading {% if book.links.all.0 %}<a href="{{ book.links.all.0 }}">"{{book.name}}"</a>{% else %}"{{book.name}}"{% endif %} by {{book.author}}. You've got {{book.current_reading.time_left.days}} days left.<p>
+					<img class="book" src="{{book.img.url}}" />
+				</div>
 			{% empty %}
 				<p>Not currently reading anything!</p>
 			{% endfor %}
@@ -98,6 +111,7 @@
 			{% for book in proposed %}
 				<tr class="book">
 						<td>{{book.name}}</td>
+						<td><img class="book" src="{{book.img.url}}" /></td>
 						<td>{{book.author}}</td>
 						<td>
 							<form class="upvote" action="{% url upvote book.id %}" method="post">

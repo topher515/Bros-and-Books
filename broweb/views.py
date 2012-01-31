@@ -13,7 +13,7 @@ from models import Book, Vote
 
 def index(request):
     now = datetime.datetime.now()
-    current_books = Book.objects.filter(mode='reading',readings__end_date__lt=now).select_related('readings')
+    current_books = Book.objects.filter(mode='reading',readings__end_date__gt=now).select_related('readings')
     proposed = Book.objects.filter(mode='proposed').annotate(sum_votes=Sum('votes__vote'),count_votes=Count('votes'))
     context = {
         'current_books':current_books,
