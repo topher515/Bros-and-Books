@@ -38,7 +38,7 @@ def login_or_create(request):
    
 def logout(request):
     dlogout(request)
-    messages.success(request,'You\'ve been logged out.' % username)
+    messages.success(request,'You\'ve been logged out.')
     return redirect(request.META.get('HTTP_REFERER'),'/')
     
 def ok_to_vote(request,book_id):
