@@ -153,14 +153,11 @@
 					</td>
 					<td class="control-group {% if book_form.author.errors %}error{% endif %}">
 						<span class="help-inline">{{ book_form.author.errors }}</span>
-						{{ book_form.author }}
+						<input id="id_author" class="input-medium" name="author">
 					</td>
 					<td class="control-group {% if book_form.pages.errors %}error{% endif %}">
 						<span class="help-inline">{{ book_form.pages.errors }}</span>
-						{{ book_form.pages }}
-					</td>
-					<td>
-						
+						<input id="id_pages" class="input-small" name="pages">
 					</td>
 				</tr>
 				<tr>
