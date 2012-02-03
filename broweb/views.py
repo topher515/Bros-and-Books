@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout as dlogout
 from django.contrib import messages
 
-from forms import BookForm
+from forms import BookForm, CommentForm
 from models import Book, Vote
 
 def index(request):
@@ -35,6 +35,14 @@ def index(request):
     context['book_form'] = book_form
 
     return render_to_response('broweb/index.html',RequestContext(request,context))
+
+
+def submit_comment(request):
+    if not request.POST:
+        return HttpResponse(status=405)
+    comment_form = CommentForm(request.POST)
+    if comment_form.is_valid():
+        pass
 
 
 def login_or_create(request):

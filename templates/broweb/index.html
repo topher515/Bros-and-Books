@@ -1,7 +1,7 @@
 <html>
 <head>
 	<title>Bros and Books</title>
-	<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
 	<style>
 	#content {
 		margin-top:25px;
@@ -36,6 +36,7 @@
 	</style>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+	<script type="text/javascript" src="/static/bootstrap/js/bootstrap-modal.js"></script>
 	<script type="text/javascript">
 	function alertMessage(data) {
 		var $alert = $("#alert-message-tpl").tmpl(data)
@@ -61,6 +62,7 @@
 			$(this).closest('.alert').remove()
 		})
 		setTimeout(function() { $('#message-container .alert').hide('slideUp') },3000)
+		$('#comment-modal').modal(options)
 	})
 	</script>
 	<script id="alert-message-tpl" type="text/template">
@@ -85,6 +87,20 @@
 				<input class="btn btn-info" type="submit" value="Login/Create">
 			</form>
 		{% endif %}
+	</div>
+	
+	<div id="comment-modal" class="modal fade">
+	  <div class="modal-header">
+	    <a class="close" data-dismiss="modal">×</a>
+	    <h3>Comment on book...</h3>
+	  </div>
+	  <div class="modal-body">
+	    <p>//TODO: Implement commenting on books!</p>
+	  </div>
+	  <div class="modal-footer">
+	    <a href="#" class="btn btn-primary">Save changes</a>
+	    <a href="#" onclick="$('#comment-modal').modal('hide')" class="btn">Close</a>
+	  </div>
 	</div>
 	
 	<div id="content" class="container">
@@ -161,16 +177,23 @@
 						<td>
 							<form class="upvote" action="{% url upvote book.id %}" method="post">
 								{% csrf_token %}
-								<input class="vote" type="image" src="/static/images/thumbsup.png" />
+								<button class="btn btn-success" type="submit">
+									<i class="icon-arrow-up"></i>
+								</button>
+								
 							</form>
 						</td>
 						<td>
 							<form class="downvote" action="{% url downvote book.id %}" method="post">
 								{% csrf_token %}
-								<input class="vote"  type="image" src="/static/images/thumbsdown.png" />
+								<button class="btn btn-danger" type="submit">
+									<i class="icon-arrow-down"></i>
+								</button>
+								
 							</form>
 						</td>
-						<td>{{book.sum_votes}} (From {{book.count_votes}} votes.)</td>
+						<td><h3>{{book.sum_votes}}</h3> <h6>From {{book.count_votes}} votes</h6></td>
+						<td><a class="btn small" data-toggle="modal" href="#comment-modal" >Comment</a></td>
 				</tr>
 			{% empty %}
 				<tr>

@@ -20,8 +20,12 @@ class Book(models.Model):
     def current_reading(self):
         return self.readings.order_by('-start_date')[0]
         
+    def comments(self):
+        return self.current_readings().comments
+        
     def __str__(self):
         return '%s by %s' % (self.name,self.author)
+
     
 class Link(models.Model):
     book = models.ForeignKey(Book, related_name='links')
@@ -51,6 +55,13 @@ class Reading(models.Model):
     def left_pages(self):
         return self.book.pages - self.through_pages ()
 
+
+class Comment(models.Model):
+    book = models.ForeignKey(Book, related_name="comments")
+    text = models.TextField()
+    ts = models.DateTimeField(auto_now_add=True)
+    edited = models.DateTimeField(auto_now=True,auto_now_add=True)
+    user = models.ForeignKey(User, related_name="comments")
     
 class Vote(models.Model):
     book = models.ForeignKey(Book, related_name='votes')
