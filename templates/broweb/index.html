@@ -1,12 +1,20 @@
 <html>
 <head>
 	<title>Bros and Books</title>
-	<link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
 	<style>
 	#content {
 		margin-top:25px;
 	}
+	#message-container {
+		position:absolute;
+		left:15%;
+		right:15%;
+		top:15px;
+		z-index:100;
+	}
 	.current-book {
+		margin-top:10px;
 		height:75px;
 		position:relative;
 	}
@@ -14,8 +22,8 @@
 		max-height:75px;
 		max-width:75px;
 		position:absolute;
-		right:15px;
-		top:15px;
+		right:10px;
+		top:10px;
 	}
 	#account {
 		position:absolute;
@@ -30,7 +38,9 @@
 	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
 	<script type="text/javascript">
 	function alertMessage(data) {
-		$("#alert-message-tpl").tmpl(data).appendTo('#message-container')
+		var $alert = $("#alert-message-tpl").tmpl(data)
+		$alert.hide().appendTo('#message-container').show('slideDown')
+		setTimeout(function() { $alert.hide('slideUp') }, 2000)
 	}
 	$(function() {
 		$('form.upvote,form.downvote').submit(function(e) {
@@ -48,13 +58,14 @@
 			
 		})
 		$('a.close').on('click',function() {
-			$(this).closest('.alert-message').remove()
+			$(this).closest('.alert').remove()
 		})
+		setTimeout(function() { $('#message-container .alert').hide('slideUp') },3000)
 	})
 	</script>
 	<script id="alert-message-tpl" type="text/template">
-		<div class="alert-message ${ tag }">
-			<a class="close" href="#">×</a>
+		<div class="alert ${ tag }">
+			<a class="close" href="javascript:void(0)" onclick="$(this).closest('.alert').remove()">×</a>
 			<p>${ message }</p>
 		</div>
 	</script>
@@ -66,12 +77,12 @@
 	
 	<div id="account">
 		{% if request.user.is_authenticated %}
-			<a class="btn secondary" href="{% url logout %}">Logout</a>
+			<a class="btn" href="{% url logout %}">Logout</a>
 		{% else %}
 			<form action="{% url login %}" method="post">{% csrf_token %}
 				<input type="text" name="username" value="Username">
 				<input type="password" name="password" value="Password">
-				<input class="btn primary" type="submit" value="Login/Create">
+				<input class="btn btn-info" type="submit" value="Login/Create">
 			</form>
 		{% endif %}
 	</div>
@@ -81,7 +92,7 @@
 		<div id="message-container">
 			{% if messages %}
 				{% for message in messages %}
-				<div class="alert-message {% if message.tags %}{{ message.tags }}{% endif %}">
+				<div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">
 					<a class="close" href="#">×</a>
 					<p>{{ message }}</p>
 				</div>
@@ -95,7 +106,7 @@
 
 			<table>
 			{% for book in current_books %}
-				<div class="current-book alert-message block-message info">
+				<div class="current-book alert alert-info">
 					<p>You're currently supposed to be reading {% if book.links.all.0 %}<a href="{{ book.links.all.0 }}">"{{book.name}}"</a>{% else %}"{{book.name}}"{% endif %} by {{book.author}}.</p>
 					<p>You've got <strong>{{book.current_reading.time_left.days}} days left</strong>.<p>
 					<p>You should be reading <strong>{{book.current_reading.pages_per_day}} pages per day</strong>. At that rate, you'd be on page <strong>{{book.current_reading.through_pages}}</strong>, with {{book.current_reading.left_pages}} to go.</p>
@@ -108,8 +119,40 @@
 		</div>
 		
 		<div id="proposed">
-			<h2>Proposed</h2>
-			<table>
+			<h2>Proposed Books</h2>
+			<form method="post" action="{% url index %}">
+				{% csrf_token %}
+				<table class="table">
+				<tr>
+					<th>Name</th><th>Cover</th><th>Author</th><th># Pages</th>
+				</tr>
+				<tr>
+					<td class="control-group {% if book_form.name.errors %}error{% endif %}">
+						<span class="help-inline">{{ book_form.name.errors }}</span>
+						{{ book_form.name }}
+					</td>
+					<td class="control-group {% if book_form.img.errors %}error{% endif %}">
+						<span class="help-inline">{{ book_form.img.errors }}</span>
+						{{ book_form.img }}
+					</td>
+					<td class="control-group {% if book_form.author.errors %}error{% endif %}">
+						<span class="help-inline">{{ book_form.author.errors }}</span>
+						{{ book_form.author }}
+					</td>
+					<td class="control-group {% if book_form.pages.errors %}error{% endif %}">
+						<span class="help-inline">{{ book_form.pages.errors }}</span>
+						{{ book_form.pages }}
+					</td>
+					<td>
+						
+					</td>
+				</tr>
+				<tr>
+					<td></td><td></td><td></td><td><input class="btn btn-primary" type="submit" value="Propose!"></td>
+				</tr>
+				<table>
+			</form>
+			<table class="table table-striped">
 			{% for book in proposed %}
 				<tr class="book">
 						<td>{{book.name}}</td>

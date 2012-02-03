@@ -9,17 +9,33 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout as dlogout
 from django.contrib import messages
 
+from forms import BookForm
 from models import Book, Vote
 
 def index(request):
+    
     now = datetime.datetime.now()
     current_books = Book.objects.filter(mode='reading',readings__end_date__gt=now).select_related('readings')
-    proposed = Book.objects.filter(mode='proposed').annotate(sum_votes=Sum('votes__vote'),count_votes=Count('votes'))
+    proposed = Book.objects.filter(mode='proposed')\
+        .annotate(sum_votes=Sum('votes__vote'),count_votes=Count('votes'))\
+        .order_by('-sum_votes')
     context = {
         'current_books':current_books,
         'proposed':proposed,
     }
+    
+    if request.method == 'POST':
+        book_form = BookForm(request.POST)
+        if book_form.is_valid():
+            book_form.save()
+            messages.success(request,"You successfully proposed a book!")
+            return redirect(index)
+    else:
+        book_form = BookForm()
+    context['book_form'] = book_form
+
     return render_to_response('broweb/index.html',RequestContext(request,context))
+
 
 def login_or_create(request):
     username = request.REQUEST.get('username')
@@ -53,6 +69,8 @@ def ok_to_vote(request,book_id):
         return True
 
 def downvote(request,book_id):
+    if not request.user.is_authenticated():
+        return HttpResponse(json.dumps({'message':"You need to login to vote. It's easy, just type in any username or password you want!"}),status=403)
     book = get_object_or_404(Book,id=book_id)
     if not ok_to_vote(request,book_id):
         return HttpResponse(json.dumps({'message':'You can only vote once an hour.'}),status=403)
@@ -61,6 +79,8 @@ def downvote(request,book_id):
     return HttpResponse(status=200)
     
 def upvote(request,book_id):
+    if not request.user.is_authenticated():
+        return HttpResponse(json.dumps({'message':"You need to login to vote. It's easy, just type in any username or password you want!"}),status=403)
     book = get_object_or_404(Book,id=book_id)
     if not ok_to_vote(request,book_id):
         return HttpResponse(json.dumps({'message':'You can only vote once an hour.'}),status=403)
