@@ -96,7 +96,9 @@
 			<table>
 			{% for book in current_books %}
 				<div class="current-book alert-message block-message info">
-					<p>You're currently supposed to be reading {% if book.links.all.0 %}<a href="{{ book.links.all.0 }}">"{{book.name}}"</a>{% else %}"{{book.name}}"{% endif %} by {{book.author}}. You've got {{book.current_reading.time_left.days}} days left.<p>
+					<p>You're currently supposed to be reading {% if book.links.all.0 %}<a href="{{ book.links.all.0 }}">"{{book.name}}"</a>{% else %}"{{book.name}}"{% endif %} by {{book.author}}.</p>
+					<p>You've got <strong>{{book.current_reading.time_left.days}} days left</strong>.<p>
+					<p>You should be reading <strong>{{book.current_reading.pages_per_day}} pages per day</strong>. At that rate, you'd be on page <strong>{{book.current_reading.through_pages}}</strong>, with {{book.current_reading.left_pages}} to go.</p>
 					{% if book.img %}<img class="book" src="{{book.img.url}}" />{% endif %}
 				</div>
 			{% empty %}

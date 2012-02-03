@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -38,6 +39,19 @@ class Reading(models.Model):
     def time_left(self):
         return (self.end_date - self.start_date)
 
+    def pages_per_day(self):
+        return self.book.pages / self.time_left().days
+        
+    def day_num(self):
+        return (datetime.datetime.now()-self.start_date).days
+        
+    def through_pages(self):
+        return self.day_num() * self.pages_per_day()
+        
+    def left_pages(self):
+        return self.book.pages - self.through_pages ()
+
+    
 class Vote(models.Model):
     book = models.ForeignKey(Book, related_name='votes')
     vote = models.IntegerField()
