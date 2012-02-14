@@ -41,7 +41,7 @@ class Reading(models.Model):
         return ('Reading %s from %s until %s' % (self.book,self.start_date,self.end_date))
     
     def time_left(self):
-        return (self.end_date - self.start_date)
+        return (self.end_date - datetime.datetime.now())
 
     def pages_per_day(self):
         return self.book.pages / self.time_left().days
