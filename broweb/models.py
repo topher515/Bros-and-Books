@@ -44,7 +44,7 @@ class Reading(models.Model):
         return (self.end_date - datetime.datetime.now())
 
     def pages_per_day(self):
-        return self.book.pages / self.time_left().days
+        return self.book.pages / (self.end_date - self.start_date).days
         
     def day_num(self):
         return (datetime.datetime.now()-self.start_date).days
