@@ -4,13 +4,13 @@
 	<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
 	<style>
 	#content {
-		margin-top:25px;
+		margin-top:55px;
 	}
 	#message-container {
 		position:absolute;
 		left:15%;
 		right:15%;
-		top:15px;
+		top:40px;
 		z-index:100;
 	}
 	.current-book {
@@ -76,18 +76,9 @@
 </head>
 <body>
 
+
 	
-	<div id="account">
-		{% if request.user.is_authenticated %}
-			<a class="btn" href="{% url logout %}">Logout</a>
-		{% else %}
-			<form action="{% url login %}" method="post">{% csrf_token %}
-				<input type="text" name="username" value="Username">
-				<input type="password" name="password" value="Password">
-				<input class="btn btn-info" type="submit" value="Login/Create">
-			</form>
-		{% endif %}
-	</div>
+
 	
 	<div id="comment-modal" class="modal fade">
 	  <div class="modal-header">
@@ -103,6 +94,47 @@
 	  </div>
 	</div>
 	
+	
+	<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+				
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+				</a>
+				
+        <a class="brand" href="./">Bros and Books</a>
+				
+        <div class="nav-collapse">
+						{% if request.user.is_authenticated %}
+	          <ul class="nav">
+		          <li>
+								<a href="{% url logout %}">Logout</a>
+							</li>
+						</ul>
+						{% else %}
+	          <ul class="nav pull-right">
+		          <li>
+								<a href="javascript:void(0)" onclick="$('form#login').submit()">Login/Create</a>
+							</li>
+						</ul>
+						
+						<form id="login" class="navbar-search pull-right" action="{% url login %}" method="post">{% csrf_token %}
+	          		<input class="search-query span2" type="text" name="username" placeholder="Username" />
+	          		<input class="search-query span2" type="password" name="password" placeholder="Password" />
+						</form>
+
+						
+
+						{% endif %}
+        </div><!--/.nav-collapse -->
+				
+      </div>
+    </div>
+  </div>
+	
 	<div id="content" class="container">
 		
 		<div id="message-container">
@@ -116,9 +148,7 @@
 			{% endif %}
 		</div>
 		
-		
 		<div id="current">
-			<h1>Bros and Books</h1>
 
 			<table>
 			{% for book in current_books %}
